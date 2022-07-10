@@ -7,6 +7,7 @@ class Personnage:
     nom = " "
     energie_depart = 0
     energie_courante = 0
+
     def __init__(self, nom, energie_depart):
         self.nom = nom
         self.energie_depart = energie_depart
@@ -39,9 +40,12 @@ class Personnage:
         else:
             return False
 
-
     def valider_nom(self, nom):
-        if len(self.nom) >= self.longueur_nom_min and len(self.nom) <= self.longueur_nom_max:
+        self.nom = nom
+        if (
+            len(self.nom) >= Personnage.longueur_nom_min
+            and len(self.nom) <= Personnage.longueur_nom_max
+        ):
             return True
         else:
             return False
@@ -54,9 +58,12 @@ class Personnage:
         Returns (bool): True si le nom est valide, False sinon.
         """
 
-
     def valider_energie_courante(self, energie_courante):
-        if self.energie_courante >= 0 and self.energie_courante <= self.energie_max:
+        self.energie_courante = energie_courante
+        if (
+            self.energie_courante >= 0
+            and Personnage.energie_courante <= Personnage.energie_max
+        ):
             return True
         else:
             return False
@@ -70,8 +77,12 @@ class Personnage:
 
         """
 
-    def valider_energie_depart(self, energie_depart):
-        if self.energie_depart >= self.energie_depart_min and self.energie_depart <= self.energie_max:
+    def valider_energie_depart(self, energie_courante):
+        self.energie_courante = energie_courante
+        if (
+            Personnage.energie_depart >= Personnage.energie_depart_min
+            and Personnage.energie_depart <= Personnage.energie_max
+        ):
             return True
         else:
             return False
@@ -90,14 +101,12 @@ class Personnage:
         Remet l’énergie courante du personnage à sa valeur de départ.
         """
 
-
     def get_energie_courante(self):
         return self.energie_courante
         """
         Retourne l'énergie courante
         Returns (int): L'énergie courante
         """
-
 
     def set_energie_courante(self, energie_courante):
         if self.valider_energie_courante(energie_courante) == True:
@@ -113,14 +122,12 @@ class Personnage:
         Returns (bool): True si l'assignation a réussi, False sinon.
         """
 
-
     def get_nom(self):
         return self.nom
         """
         Retourne le nom.
         Returns (str): Le nom.
         """
-
 
     def set_nom(self, nom):
         if self.valider_nom(nom) == True:
@@ -136,14 +143,12 @@ class Personnage:
         Returns (bool): True si l'assignation a réussi, False sinon.
         """
 
-
     def get_energie_depart(self):
         return self.energie_depart
         """
         Retourne l'énergie de départ.
         Returns (int): L'énergie de départ
         """
-
 
     def set_energie_depart(self, energie_depart):
         if self.valider_energie_depart(energie_depart) == True:
@@ -160,14 +165,16 @@ class Personnage:
         """
 
     # compléter la méthode manquante
-if __name__ == '__main__':
-    t = Personnage('236',50)
-    print(t.valider_nom(''))
+
+
+if __name__ == "__main__":
+    t = Personnage("236", 50)
+    print(t.valider_nom(""))
     print(t.est_mort())
     print(t.valider_energie_courante(""))
-    print(t.valider_energie_depart(''))
+    print(t.valider_energie_depart(""))
     print(t.reset_energie())
-    print(t.set_energie_courante(''))
-    print(t.set_nom(''))
+    print(t.set_energie_courante(""))
+    print(t.set_nom(""))
     print(t.get_energie_depart())
-    print(t.set_energie_depart(''))
+    print(t.set_energie_depart(""))

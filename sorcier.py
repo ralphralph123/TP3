@@ -12,6 +12,7 @@ class Sorcier(Personnage):
         nb_charmes_max (int): Le nombre de charmes maximum
         nb_charmes (int): Le nombre de charmes courant
     """
+
     def __init__(self, nom, energie_depart, energie, nbr_charmes):
         super().__init__(nom, energie_depart)
         self.nbr_charmes = nbr_charmes
@@ -27,8 +28,9 @@ class Sorcier(Personnage):
         """
 
     def to_string(self):
-        return "Le sorcier, {} a une énergie de {} et {} charmes".format(self.nom, self.energie_courante,
-                                                                                self.nbr_charmes)
+        return "Le sorcier, {} a une énergie de {} et {} charmes".format(
+            self.nom, self.energie_courante, self.nbr_charmes
+        )
         """
         Retourne une chaîne du genre "Le sorcier, nom de Personnage, a une énergie de, valeur de l’énergie et,
         valeur du nombre de charmes, charmes."
@@ -36,7 +38,8 @@ class Sorcier(Personnage):
         """
 
     def valider_nbr_charmes(self, nbr_charmes):
-        if self.nbr_charmes >= 0 and self.nbr_charmes <= self.nbr_charmes_max:
+        self.nbr_charmes = nbr_charmes
+        if self.nbr_charmes >= 0 and self.nbr_charmes <= Sorcier.nbr_charmes_max:
             return True
         else:
             return False
@@ -76,6 +79,7 @@ class Sorcier(Personnage):
         """
 
     def set_nbr_charmes(self, nbr_charmes):
+        self.nbr_charmes = nbr_charmes
         if self.valider_nbr_charmes(nbr_charmes) == True:
             self.nbr_charmes = nbr_charmes
             return True
@@ -88,4 +92,3 @@ class Sorcier(Personnage):
 
         Returns (bool): True si le nombre de charmes est valide et a été modifié, False sinon.
         """
-n = Sorcier('2367',40, 20, 10)

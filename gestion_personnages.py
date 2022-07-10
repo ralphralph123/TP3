@@ -9,25 +9,22 @@ from guerrier import Guerrier
 
 
 class GestionPersonnages(Sorcier, Guerrier):
-    ut = Util()
-    sc = Sorcier
-    gr = Guerrier
-    ps = Personnage
     liste_personnages = []
-    fichier_courant = " "
+    fichier_courant = ""
     """
     Classe s'occupant de la gestion des personnages. 
     Attributes:
         liste_personnages (list): La liste des personnages
         fichier_courant (str): Le nom du fichier courant
     """
-    def __init__(self, nom, energie_depart, energie, force):
-        self.force = force
-        self.energie_courante = energie
+
+    # def __init__(self, nom, energie_depart, energie, force):
+    #     self.force = force
+    #     self.energie_courante = energie
 
     def gestion_creer_sorcier(self):
-        if self.gp.saisir_et_creer_sorcier() == True:
-            self.ajouter_personnage(self.personnage)
+        if self.saisir_et_creer_sorcier():
+            self.ajouter_personnage(self.sorcier)
         else:
             return None
 
@@ -38,20 +35,21 @@ class GestionPersonnages(Sorcier, Guerrier):
         """
 
     def saisir_et_creer_sorcier(self):
-        root = tk.Tk()
-        self.nom = self.ut.saisir_string('Donnez le nom du sorcier ? (entre 3 à 30)')
-        self.energie_courante = self.ut.saisir_objet_entier("Entrez l'énergie du sorcier ? (entre 1 à 100)")
-        self.nbr_charmes = self.ut.saisir_objet_entier("Entrez le nombre de charmes ? (entre 0 à 20)")
-        if self.nom != None:
-            if self.valider_nom(self.nom) == True:
-                if self.energie_courante != None:
-                    if self.valider_energie_courante(self.energie_courante) == True:
-                        if self.force != None:
-                            if self.valider_nbr_charmes(self.nbr_charmes) == True:
-                                self.type = 'S'
-                                return self.energie_courante
-
-
+        self.nom = Util.saisir_string("Donnez le nom du sorcier ? (entre 3 à 30)")
+        if Personnage.valider_nom(self, self.nom):
+            self.energie_courante = Util.saisir_objet_entier(
+                "Entrez l'énergie du sorcier ? (entre 1 à 100)"
+            )
+            if Personnage.valider_energie_courante(self, self.energie_courante):
+                self.nbr_charmes = Util.saisir_objet_entier(
+                    "Entrez le nombre de charmes ? (entre 0 à 20)"
+                )
+                if Sorcier.valider_nbr_charmes(self, self.nbr_charmes):
+                    self.type = "S"
+                    self.sorcier = Sorcier(
+                        self.nom, 0, self.energie_courante, self.nbr_charmes
+                    )
+                    return True
 
         """
         Retourne un objet Sorcier valide. Chaque information du sorcier demandée doit être validée. 
@@ -72,10 +70,11 @@ class GestionPersonnages(Sorcier, Guerrier):
         Sinon, on affiche seulement que le sorcier n’a pas été ajouté.
         """
 
-    def saisir_et_creer_guerrier(self):
-        root = tk.Tk()
-        self.nom = self.ut.saisir_string('Donnez le nom du guerrier ? (entre 3 à 30)')
-        self.energie_courante = self.ut.saisir_objet_entier("Entrez l'énergie du guerrier ? (entre 1 à 100)")
+    def saisir_et_creer_guerrier(self, nom, energie_courante):
+        self.nom = self.ut.saisir_string("Donnez le nom du guerrier ? (entre 3 à 30)")
+        self.energie_courante = self.ut.saisir_objet_entier(
+            "Entrez l'énergie du guerrier ? (entre 1 à 100)"
+        )
         self.force = self.ut.saisir_objet_entier("Entrez la force ? (entre 0 à 80)")
         if self.nom != None:
             if self.valider_nom(self.nom) == True:
@@ -83,7 +82,7 @@ class GestionPersonnages(Sorcier, Guerrier):
                     if self.valider_energie_courante(self.energie_courante) == True:
                         if self.force != None:
                             if self.valider_force(self.force) == True:
-                                self.type = 'G'
+                                self.type = "G"
                                 return self.energie_courante
         """
         Retourne un objet Guerrier valide.  Chaque information du guerrier demandée doit être validée. 
@@ -93,25 +92,20 @@ class GestionPersonnages(Sorcier, Guerrier):
         Returns (Guerrier): Le guerrier instancié si la création a réussie, None sinon.
         """
 
-    def ajouter_personnage(self, personnage):
+    def ajouter_personnage(self):
         try:
-            self.type
+            if self.type == "G":
+                GestionPersonnages.liste_personnages.append(Guerrier.to_string(self))
+                return GestionPersonnages.liste_personnages
+            elif self.type == "S":
+                GestionPersonnages.liste_personnages.append(Sorcier.to_string(self))
+                return GestionPersonnages.liste_personnages
         except AttributeError:
-            return None
-        if self.type == 'G' or 'S':
-            self.personnage = personnage
-            self.personnage = self.type
-            if self.personnage == 'G':
-                self.liste_personnages.append(self.gr.to_string(self))
-                return self.liste_personnages
-            elif self.personnage == 'S':
-                self.liste_personnages.append(self.sc.to_string(self))
-                return self.liste_personnages
+            return "G ou S seulement"
 
     def mettre_a_jour_liste(self):
-        liste_energie = []
-        new_liste_energie = liste_energie.append(self.energie_courante)
-        print(new_liste_energie)
+        new_liste_personnages = [GestionPersonnages.liste_personnages]
+        print(new_liste_personnages)
 
         """
                 Mets à jour et trie la liste des personnages par rapport à l'énergie courante. 
@@ -154,25 +148,37 @@ class GestionPersonnages(Sorcier, Guerrier):
 
     def gestion_ouvrir(self):
         if self.liste_personnages != []:
-            sauvegarder_donnees = messagebox.askyesno("Gestion personnages",
-                                                      "Voulez-vous sauvegarder les données courantes avant d'ouvrir un nouveau fichier?")
+            sauvegarder_donnees = messagebox.askyesno(
+                "Gestion personnages",
+                "Voulez-vous sauvegarder les données courantes avant d'ouvrir un nouveau fichier?",
+            )
             if sauvegarder_donnees == True:
                 self.gestion_enregistrer_sous(self)
-                file = filedialog.askopenfile(mode="r", title="Sélectionner le fichier", filetypes=[("txt", "*.txt")])
+                file = filedialog.askopenfile(
+                    mode="r",
+                    title="Sélectionner le fichier",
+                    filetypes=[("txt", "*.txt")],
+                )
                 if file is None:
                     pass
                 else:
                     content = file.read()
                     print(content)
             else:
-                file = filedialog.askopenfile(mode="r", title="Sélectionner le fichier", filetypes=[("txt", "*.txt")])
+                file = filedialog.askopenfile(
+                    mode="r",
+                    title="Sélectionner le fichier",
+                    filetypes=[("txt", "*.txt")],
+                )
                 if file is None:
                     pass
                 else:
                     content = file.read()
                     print(content)
         else:
-            file = filedialog.askopenfile(mode="r", title="Sélectionner le fichier", filetypes=[("txt", "*.txt")])
+            file = filedialog.askopenfile(
+                mode="r", title="Sélectionner le fichier", filetypes=[("txt", "*.txt")]
+            )
             if file is None:
                 pass
             else:
@@ -212,8 +218,10 @@ class GestionPersonnages(Sorcier, Guerrier):
 
     def gestion_vider_liste(self):
         if self.liste_personnages != []:
-            sauvegarder_donnees = messagebox.askyesno("Gestion personnages",
-                                                      "Voulez-vous sauvegarder les données courantes avant de vider la liste de personnages?")
+            sauvegarder_donnees = messagebox.askyesno(
+                "Gestion personnages",
+                "Voulez-vous sauvegarder les données courantes avant de vider la liste de personnages?",
+            )
             if sauvegarder_donnees == True:
                 if self.fichier_courant is not None:
                     self.gestion_enregistrer(self)
@@ -236,7 +244,9 @@ class GestionPersonnages(Sorcier, Guerrier):
         """
 
     def gestion_quitter(self):
-        quitter_application = messagebox.askyesno("Gestion personnages", "Voulez-vous vraiment quitter ce programme?")
+        quitter_application = messagebox.askyesno(
+            "Gestion personnages", "Voulez-vous vraiment quitter ce programme?"
+        )
         if quitter_application == True:
             exit()
         else:
@@ -245,5 +255,3 @@ class GestionPersonnages(Sorcier, Guerrier):
         """
         Permet de quitter l'application après confirmation de l'utilisateur.
         """
-
-
