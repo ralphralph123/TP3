@@ -1,15 +1,11 @@
 from tkinter.filedialog import *
 from tkinter import *
 from gestion_personnages import GestionPersonnages
-from personnage import Personnage
-
+from guerrier import Guerrier
 
 class Interface(Frame):
-    gp = GestionPersonnages
-    ps = Personnage
+    gp = GestionPersonnages()
     pIndex = -1
-    liste_personnages = []
-    sauvegarder_donnees = " "
 
     def __init__(self, parent):
         Frame.__init__(self, parent)
@@ -51,27 +47,28 @@ class Interface(Frame):
         scrollbar = Scrollbar(self, orient='vertical')
         scrollbar.pack(side=RIGHT, fill=BOTH)
 
-        self.listbox = Listbox(self, width=350)
-        self.listbox.pack(side=LEFT, fill=BOTH)
+        listbox = Listbox(self, width=350)
+        listbox.pack(side=LEFT, fill=BOTH)
 
-
+        for values in self.gp.liste_personnages:
+            listbox.insert(END, values)
 
         def selectionner(evt):
-            valeur = str((self.listbox.get(ACTIVE)))
+            valeur = str((listbox.get(ACTIVE)))
             print(valeur)
 
-        self.listbox.bind('<<ListboxSelect>>', selectionner)
+        listbox.bind('<<ListboxSelect>>', selectionner)
 
-        self.listbox.config(yscrollcommand=scrollbar.set)
-        scrollbar.config(command=self.listbox.yview)
+        listbox.config(yscrollcommand=scrollbar.set)
+        scrollbar.config(command=listbox.yview)
 
         # Ajout de bouttons
 
 
-        b1 = Button(self.f1, padx=30, pady=27, text="Créer un sorcier", command=self.btnSorcier_Click)
+        b1 = Button(self.f1, padx=30, pady=27, text="Créer un sorcier", command=self.gp.gestion_creer_sorcier)
         b1.pack()
 
-        b2 = Button(self.f1, padx=28, pady=27, text='Créer un guerrier', command=self.btnGuerrier_Click)
+        b2 = Button(self.f1, padx=28, pady=27, text='Créer un guerrier', command=self.gp.gestion_creer_guerrier)
         b2.pack()
 
         b3 = Button(self.f1, padx=53, pady=27, text='Attaquer', command=self.gp.gestion_attaquer)
@@ -119,8 +116,8 @@ class Interface(Frame):
 
 
     def menuOuvrir_Click(self):
-        self.gp.gestion_ouvrir(self)
-        personnages = self.gp.mettre_a_jour_liste(self)
+        self.gp.gestion_ouvrir()
+        personnages = self.gp.mettre_a_jour_liste()
 
         # Update listview
         if personnages:
@@ -128,43 +125,38 @@ class Interface(Frame):
 
 
     def menuEnregistrer_Click(self):
-        self.gp.gestion_enregistrer(self)
+        self.gp.gestion_enregistrer()
 
 
     def menuEnregistrerSous_Click(self):
-        self.gp.gestion_enregistrer_sous(self)
-        asksaveasfile(filetypes=[('all files', '.*')])
+        self.gp.gestion_enregistrer_sous()
+        askopenfilename(filetypes=[('all files', '.*')])
 
 
     def menuViderListe_Click(self):
-        self.gp.gestion_vider_liste(self)
+        self.gp.gestion_vider_liste()
             #quit()
 
     def menuQuitter_Click(self):
-        if self.gp.gestion_quitter(self):
+        if self.gp.gestion_quitter():
             quit()
 
 
-
     def btnSorcier_Click(self):
-        n = GestionPersonnages('allo', 40, 20, 80)
-        self.energie_courante = n.saisir_et_creer_sorcier()
-        self.new_liste = n.ajouter_personnage(self.energie_courante)
-        if self.new_liste != None:
-            self.listbox.delete(0, END)
-            for values in self.new_liste:
-                self.listbox.insert(END, values)
-            self.gp.mettre_a_jour_liste(self)
+        self.gp.gestion_creer_sorcier()
+        personnages = self.gp.mettre_a_jour_liste()
+
+        # Update listview
+        if personnages:
+            self.updateList(personnages)
 
     def btnGuerrier_Click(self):
-        n = GestionPersonnages('allo', 40, 20, 80)
-        self.energie_courante = n.saisir_et_creer_guerrier()
-        self.new_liste = n.ajouter_personnage(self.energie_courante)
-        if self.new_liste != None:
-            self.listbox.delete(0, END)
-            for values in self.new_liste:
-                self.listbox.insert(END, values)
-            self.gp.mettre_a_jour_liste(self)
+        self.gp.gestion_creer_guerrier()
+        personnages = self.gp.mettre_a_jour_liste()
+
+        # Update listview
+        if personnages:
+            self.updateList(personnages)
 
 
     def btnAttaquer_Click(self):
@@ -209,5 +201,8 @@ def main():
     app = Interface(root)
     root.mainloop()
 
+
+
 if __name__ == '__main__':
     main()
+
