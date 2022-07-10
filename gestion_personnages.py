@@ -1,55 +1,19 @@
+import tkinter as tk
 from tkinter import filedialog
 from tkinter.filedialog import *
 from tkinter import messagebox
 from util import Util
-from util import saisir_string
 from personnage import Personnage
 from sorcier import Sorcier
 from guerrier import Guerrier
 
 
-
-class GestionPersonnages():
-    liste_personnages = ["Le Sorcier, Gwyr, a une énergie de 6, et 15 charmes", "Sorcier;Pied de chêne;19;7;4", "Guerrier;Lucius Fleurdelotus;14;14;52",
-                         "Guerrier;SkyDragon;14;14;26", "Sorcier;Caius Marchéopus;19;19;19", "Guerrier;Heian;20;20;25",
-                         "Sorcier;Nuage bleu;22;22;3",
-                         "Sorcier;Caius Marchéopus;28;28;4",
-                         "Guerrier;Histéric;32;32;65",
-                         "Guerrier;Tintabulus;33;33;40",
-                         "Sorcier;BlackThorn;34;34;4",
-                         "Guerrier;Ciel hurlant;35;35;54",
-                         "Guerrier;Bumbadil;36;36;3",
-                         "Guerrier;Tintabulus;39;39;43",
-                         "Guerrier;Pleindastus;47;47;5",
-                         "Sorcier;Nuage bleu;50;50;14",
-                         "Guerrier;L'Auroch;51;51;31",
-                         "Guerrier;Cheval d'argent;52;52;13",
-                         "Sorcier;Itak Italé;55;55;16",
-                         "Sorcier;Tornade rouge;55;55;13",
-                         "Sorcier;Amérix;56;56;16",
-                         "Guerrier;Ptah;56;56;9",
-                         "Sorcier;Caïus Obtus;60;60;13",
-                         "Sorcier;Liric;66;66;10",
-                         "Sorcier;Hibou-qui-silence;69;69;8",
-                         "Sorcier;Nuage bleu;22;22;3",
-                         "Sorcier;Caius Marchéopus;28;28;4",
-                         "Guerrier;Histéric;32;32;65",
-                         "Guerrier;Tintabulus;33;33;40",
-                         "Sorcier;BlackThorn;34;34;4",
-                         "Guerrier;Ciel hurlant;35;35;54",
-                         "Guerrier;Bumbadil;36;36;3",
-                         "Guerrier;Tintabulus;39;39;43",
-                         "Guerrier;Pleindastus;47;47;5",
-                         "Sorcier;Nuage bleu;50;50;14",
-                         "Guerrier;L'Auroch;51;51;31",
-                         "Guerrier;Cheval d'argent;52;52;13",
-                         "Sorcier;Itak Italé;55;55;16",
-                         "Sorcier;Tornade rouge;55;55;13",
-                         "Sorcier;Amérix;56;56;16",
-                         "Guerrier;Ptah;56;56;9",
-                         "Sorcier;Caïus Obtus;60;60;13",
-                         "Sorcier;Liric;66;66;10",
-                         "Sorcier;Hibou-qui-silence;69;69;8"]
+class GestionPersonnages(Sorcier, Guerrier):
+    ut = Util()
+    sc = Sorcier
+    gr = Guerrier
+    ps = Personnage
+    liste_personnages = []
     fichier_courant = " "
     """
     Classe s'occupant de la gestion des personnages. 
@@ -57,25 +21,15 @@ class GestionPersonnages():
         liste_personnages (list): La liste des personnages
         fichier_courant (str): Le nom du fichier courant
     """
-
-    def mettre_a_jour_liste(self):
-        for i in self.liste_personnages:
-            pass
-        """
-        Mets à jour et trie la liste des personnages par rapport à l'énergie courante. 
-        Returns (list str): La liste triée des chaînes de caractères des personnages
-
-        """
+    def __init__(self, nom, energie_depart, energie, force):
+        self.force = force
+        self.energie_courante = energie
 
     def gestion_creer_sorcier(self):
-        if saisir_et_creer_sorcier(self)==True:
-            ajouter_personnage(self)
-            return "Le nouveau sorcier a été ajouté à la liste"
+        if self.gp.saisir_et_creer_sorcier() == True:
+            self.ajouter_personnage(self.personnage)
         else:
-            return "Le sorcier n'a pas été ajouté"
-
-
-        pass
+            return None
 
         """
         Crée un personnage sorcier si les informations du sorcier (méthode saisir_et_creer_sorcier) 
@@ -84,16 +38,21 @@ class GestionPersonnages():
         """
 
     def saisir_et_creer_sorcier(self):
-        self.util.saisir_string("Donnez le nom du sorcier (entre 3 à 30)")
-        if self.valider_nom(nom) == True:
-            saisir_objet_entier("Entrez l'énergie du sorcier")
-            if self.valider_energie_depart(energie_depart) == True:
-                saisir_objet_entier("Entrez le nombre de charmes")
-                if self.valider_nbr_charmes(nbr_charmes) == True:
-                    return (self.nom)
+        root = tk.Tk()
+        self.nom = self.ut.saisir_string('Donnez le nom du sorcier ? (entre 3 à 30)')
+        self.energie_courante = self.ut.saisir_objet_entier("Entrez l'énergie du sorcier ? (entre 1 à 100)")
+        self.nbr_charmes = self.ut.saisir_objet_entier("Entrez le nombre de charmes ? (entre 0 à 20)")
+        if self.nom != None:
+            if self.valider_nom(self.nom) == True:
+                if self.energie_courante != None:
+                    if self.valider_energie_courante(self.energie_courante) == True:
+                        if self.force != None:
+                            if self.valider_nbr_charmes(self.nbr_charmes) == True:
+                                self.type = 'S'
+                                return self.energie_courante
 
 
-        pass
+
         """
         Retourne un objet Sorcier valide. Chaque information du sorcier demandée doit être validée. 
         L’annulation d’une info entraine automatiquement l’annulation des informations suivantes.  
@@ -103,12 +62,10 @@ class GestionPersonnages():
         """
 
     def gestion_creer_guerrier(self):
-        if saisir_et_creer_guerrier(self) ==True:
-            ajouter_personnage(self)
-            print("Le nouveau guerrier a été ajouté à la liste")
+        if self.gp.saisir_et_creer_guerrier() == True:
+            self.ajouter_personnage(self.personnage)
         else:
-            print("Le sorcier n'a pas été ajouté")
-        pass
+            return None
         """
         Crée un personnage sorcier si les informations du sorcier (méthode saisir_et_creer_sorcier) 
         sont valides, on ajoute le sorcier à la liste (méthode ajouter_personnage) et on affiche le message approprié.  
@@ -116,10 +73,18 @@ class GestionPersonnages():
         """
 
     def saisir_et_creer_guerrier(self):
-        if self.valider_force(force) == True:
-            saisir_string("Entrez le nom du sorcier")
-                    return (self.nom)
-        pass
+        root = tk.Tk()
+        self.nom = self.ut.saisir_string('Donnez le nom du guerrier ? (entre 3 à 30)')
+        self.energie_courante = self.ut.saisir_objet_entier("Entrez l'énergie du guerrier ? (entre 1 à 100)")
+        self.force = self.ut.saisir_objet_entier("Entrez la force ? (entre 0 à 80)")
+        if self.nom != None:
+            if self.valider_nom(self.nom) == True:
+                if self.energie_courante != None:
+                    if self.valider_energie_courante(self.energie_courante) == True:
+                        if self.force != None:
+                            if self.valider_force(self.force) == True:
+                                self.type = 'G'
+                                return self.energie_courante
         """
         Retourne un objet Guerrier valide.  Chaque information du guerrier demandée doit être validée. 
         L’annulation d’une information entraine automatiquement l’annulation des informations suivantes.  
@@ -129,13 +94,30 @@ class GestionPersonnages():
         """
 
     def ajouter_personnage(self, personnage):
+        try:
+            self.type
+        except AttributeError:
+            return None
+        if self.type == 'G' or 'S':
+            self.personnage = personnage
+            self.personnage = self.type
+            if self.personnage == 'G':
+                self.liste_personnages.append(self.gr.to_string(self))
+                return self.liste_personnages
+            elif self.personnage == 'S':
+                self.liste_personnages.append(self.sc.to_string(self))
+                return self.liste_personnages
 
-        pass
+    def mettre_a_jour_liste(self):
+        liste_energie = []
+        new_liste_energie = liste_energie.append(self.energie_courante)
+        print(new_liste_energie)
+
         """
-        Ajoute le Personnage à la liste.
-        Args:
-            personnage (Personnage): Le personnage à ajouter. 
-        """
+                Mets à jour et trie la liste des personnages par rapport à l'énergie courante. 
+                Returns (list str): La liste triée des chaînes de caractères des personnages
+
+                """
 
     def gestion_attaquer(self, index):
         pass
@@ -175,7 +157,7 @@ class GestionPersonnages():
             sauvegarder_donnees = messagebox.askyesno("Gestion personnages",
                                                       "Voulez-vous sauvegarder les données courantes avant d'ouvrir un nouveau fichier?")
             if sauvegarder_donnees == True:
-                self.gestion_enregistrer_sous()
+                self.gestion_enregistrer_sous(self)
                 file = filedialog.askopenfile(mode="r", title="Sélectionner le fichier", filetypes=[("txt", "*.txt")])
                 if file is None:
                     pass
@@ -234,11 +216,11 @@ class GestionPersonnages():
                                                       "Voulez-vous sauvegarder les données courantes avant de vider la liste de personnages?")
             if sauvegarder_donnees == True:
                 if self.fichier_courant is not None:
-                    self.gestion_enregistrer()
+                    self.gestion_enregistrer(self)
                     self.liste_personnages = []
                     self.fichier_courant = None
                 else:
-                    self.gestion_enregistrer_sous()
+                    self.gestion_enregistrer_sous(self)
                     self.liste_personnages = []
                     self.fichier_courant = None
             else:
@@ -265,4 +247,3 @@ class GestionPersonnages():
         """
 
 
-n = Sorcier('2367', 40, 20, 10)
